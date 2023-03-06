@@ -1,6 +1,7 @@
 #include "../Header.cpp"
 
 const int M = 1e9+7;
+
 // binary exponent 
 ll expmod(ll b, ll e){
     ll ans = 1;
@@ -10,6 +11,9 @@ ll expmod(ll b, ll e){
     }
     return ans;
 }
+
+// Binary exponentiation: a and b relative primes -> a ^ phi(m) % m = 1 -> a ^ {phi(m) - 1} % mod = a^-1
+// Binary exponentiation: m prime -> a ^ {m - 1} % m = 1 -> a ^ {m - 2} % mod = 1
 
 // When M is prime
 ll invmod(ll a){ return expmod(a, M-2); }
@@ -21,9 +25,10 @@ ll F[MAXN], INV[MAXN], FI[MAXN];
 
 F[0] = 1; repx(i, 1, MAXN) F[i] = F[i-1]*i %M;
 INV[1] = 1; repx(i, 2, MAXN) INV[i] = M - (ll)(M/i)*INV[M%i]%M;
-FI[0] = 1; repx(i, 1, MAXN) FI[i] = FI[i-1]*INV[i] %M;
+FI[0] = 1; repx(i, 1, MAXN) FI[i] = FI[i-1]*INV[i] % M;
 
 
+// Divide a elements in b segments = choose(a - 1, b - 1)
 // combinatory
 ll Comb(ll n, ll k){
     if(n < k) return 0;
@@ -86,5 +91,13 @@ ll lucas(ll n, ll k, int p){
         ans = (ans * C[n%M][k%M]) % M;
         n /= M; k /= M;
     }
+    return ans;
+}
+
+
+// Multinomial Coefficient
+ll multinomial(vector<int> K) {
+    ll n = 0, ans = 1;
+    for (int k : K) n += k, ans = mul(ans, choose(n, k));
     return ans;
 }
