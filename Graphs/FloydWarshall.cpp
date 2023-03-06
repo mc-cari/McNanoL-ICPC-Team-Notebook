@@ -10,8 +10,6 @@ void printPath(int i, int j)
 int main()
 {
     int n, m, q, x ,y ,w;
-
-    
     vector<vl > g(n, vl(n, INF));
     rep(i, n)
     {
@@ -23,12 +21,10 @@ int main()
         cin >> x >> y >> w;
         g[x][y] = min(g[x][y], w); // handle repeats
     }
-
     
     rep(i, n)
         rep(j, n)
             p[i][j] = i;
-
 
     rep(k, n)
         rep(i, n)
@@ -44,8 +40,7 @@ int main()
                     g[i][j] = g[i][k] + g[k][j];
                     p[i][j] = p[k][j];
                     
-                }
-                        
+                }                        
     rep(k, n)
         rep(i, n)
             rep(j, n)
@@ -61,8 +56,6 @@ int main()
             cout << "-Infinity\n";
         else
             cout << g[x][y] << "\n";
-    }
-
-    
+    }    
 	return 0;
 }
