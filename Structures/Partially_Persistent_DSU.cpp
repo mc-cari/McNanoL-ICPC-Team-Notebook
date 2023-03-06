@@ -1,7 +1,7 @@
 struct PPDSU {
   vector<vector<pair<int, int>>> par;
   int time = 0; //initial time
-  DSU(int n) : par(n + 1, {{-1, 0}}) {}
+  PPDSU(int n) : par(n + 1, {{-1, 0}}) {}
   bool merge(int u, int v) {
     ++time;
     if ((u = root(u, time)) == (v = root(v, time))) return 0;
