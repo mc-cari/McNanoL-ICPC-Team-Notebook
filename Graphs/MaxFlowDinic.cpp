@@ -15,84 +15,49 @@
 
 
 // maximo matching m*sqrt(n)
-#include "../Header.cpp"
 
-struct Dinic {
-    struct edge {
-        int to, rev;
-        ll f, cap;
-    };
+class Dinic
+{
+    struct Edge { int to, rev; ll f, c; };
+    int n, t_; vector<vector<Edge>> G;
+    vl D; vi q, W;
 
-    vector<vector<edge>> g;
-    vector<ll> dist;
-    vector<int> q, work;
-    int n, sink;
-
-    bool bfs(int start, int finish) {
-        dist.assign(n, -1);
-        dist[start] = 0;
-        int head = 0, tail = 0;
-        q[tail++] = start;
-        while (head < tail) {
-            int u = q[head++];
-            for (const edge &e : g[u]) {
-                int v = e.to;
-                if (dist[v] == -1 and e.f < e.cap) {
-                    dist[v] = dist[u] + 1;
-                    q[tail++] = v;
-                }
-            }
+    bool bfs(int s, int t)
+    {
+        W.assign(n, 0); D.assign(n, -1); D[s] = 0;
+        int f = 0, l = 0; q[l++] = s;
+        while (f < l)
+        {
+            int u = q[f++];
+            for (const Edge &e : G[u]) if (D[e.to] == -1 && e.f < e.c)
+                D[e.to] = D[u] + 1, q[l++] = e.to;
         }
-        return dist[finish] != -1;
+        return D[t] != -1;
     }
-
-    ll dfs(int u, ll f) {
-        if (u == sink)
-            return f;
-        for (int &i = work[u]; i < (int)g[u].size(); ++i) {
-            edge &e = g[u][i];
-            int v = e.to;
-            if (e.cap <= e.f or dist[v] != dist[u] + 1)
-                continue;
-            ll df = dfs(v, min(f, e.cap - e.f));
-            if (df > 0) {
-                e.f += df;
-                g[v][e.rev].f -= df;
-                return df;
-            }
+    ll dfs(int u, ll f)
+    {
+        if (u == t_) return f;
+        for (int &i = W[u]; i < (int)G[u].size(); ++i)
+        {
+            Edge &e = G[u][i]; int v = e.to;
+            if (e.c <= e.f || D[v] != D[u] + 1) continue;
+            ll df = dfs(v, min(f, e.c - e.f));
+            if (df > 0) { e.f += df, G[v][e.rev].f -= df; return df; }
         }
         return 0;
     }
 
-    Dinic(int n) {
-        this->n = n;
-        g.resize(n);
-        dist.resize(n);
-        q.resize(n);
+public:
+    Dinic(int N) : n(N), G(N), D(N), q(N) {}
+    void addEdge(int u, int v, ll cap)
+    {
+        G[u].push_back({v, (int)G[v].size(), 0, cap});
+        G[v].push_back({u, (int)G[u].size() - 1, 0, 0}); // cap if bidirectional
     }
-
-    void add_edge(int u, int v, ll cap) {
-        edge a = {v, (int)g[v].size(), 0, cap};
-        edge b = {u, (int)g[u].size(), 0, 0}; //Poner cap en vez de 0 si la arista es bidireccional
-        g[u].push_back(a);
-        g[v].push_back(b);
-    }
-
-    ll max_flow(int source, int dest) {
-        sink = dest;
-        ll ans = 0;
-        while (bfs(source, dest)) {
-            work.assign(n, 0);
-            while (ll delta = dfs(source, LLONG_MAX))
-                ans += delta;
-        }
+    ll maxFlow(int s, int t)
+    {
+        t_ = t; ll ans = 0;
+        while (bfs(s, t)) while (ll dl = dfs(s, LLONG_MAX)) ans += dl;
         return ans;
     }
 };
-
-// usage
-int main() {
-    Dinic din(2);
-    din.add_edge(0, 1, 10);
-    ll mf = din.max_flow(0,1);
-}

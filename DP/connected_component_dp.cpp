@@ -2,7 +2,7 @@ int n, k, dp[mxN][mxN][1005][3];
 int a[mxN];
 
 int ff(ll i, ll c, ll sum, ll b){ // {i, components, sum, borders} 1 indexed
-    if(b > 2 || sum > k) return 0; // k = limit
+    if(b > 2 || sum > k) return 0; // k = limit sum
     if(c == 0 && i > 1) return 0;
     if(i == n+1) return b == 2 && c == 1; // array completely filled
     int &ret = dp[i][c][sum][b];

@@ -68,5 +68,3 @@ struct SegmentTree
 		ST[n] = op(ST[2*n], ST[2*n+1]);
 	}
 };
-
-

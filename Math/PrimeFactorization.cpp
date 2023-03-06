@@ -1,6 +1,5 @@
 #include "../Header.cpp"
 
-
 // stores smallest prime factor for every number
 int spf[MAXN];
  
@@ -60,9 +59,8 @@ void primeFactors(ll n) {
         while (n % i == 0) {  
             cout << i << " ";  
             n = n/i;  
-        }
-    }  
-
+        }  
+    }   
     if (n > 2)  
         cout << n << " ";  
 }
