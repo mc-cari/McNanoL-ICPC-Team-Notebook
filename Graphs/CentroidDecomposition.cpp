@@ -59,12 +59,5 @@ int main(){
     if(ans >= INF) ans = -1;
     cout << "Case #" << T << ": ";
     cout << ans << "\n";
-  }
-
-
-
-
-  
-  cerr << "\nTime elapsed: " << 1000 * clock() / CLOCKS_PER_SEC << "ms\n";
-  return 0;
+  } 
 }
