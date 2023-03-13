@@ -1,11 +1,9 @@
 #include "../Header.cpp"
 
 vector <bool> crib;
-void criba(ll b)
-{
+void criba(ll b){
     crib.assign(b, 1);
-    crib[0] = 0;
-    crib[1] = 0;
+    crib[0] = 0; crib[1] = 0;
     repx(k, 2, sqrt(b+1) + 1)
         if(crib[k])
             for(int j=2; (j * k) < b + 1; j++)//optimization j=k
@@ -27,7 +25,6 @@ vector<bool> segmentedSieve(ll L, ll R) {
                 mark[j] = 1;
         }
     }
-
     vector<bool> isPrime(R - L + 1, true);
     for (ll i : primes)
         for (ll j = max(i * i, (L + i - 1) / i * i); j <= R; j += i)
@@ -40,12 +37,10 @@ vector<bool> segmentedSieve(ll L, ll R) {
 // Linear Sieve: O(n)
 // Uses more memory
 vl linearSieve(int n = 10000000) {
-    vl lp(n + 1, 0);
-    vl pr;
+    vl lp(n + 1, 0), pr;
     repx(i, 2, n + 1) {
         if (lp[i] == 0) {
-            lp[i] = i;
-            pr.pb(i);
+            lp[i] = i; pr.pb(i);
         }
         for (int j = 0; i * pr[j] <= n; ++j) {
             lp[i * pr[j]] = pr[j];
@@ -65,18 +60,14 @@ bool isPrime(int x) {
     }
     return true;
 }
-
 // Fermat theorem: a ^ (p - 1) % p = 1 for all a
 // 646 of 10^9 fails
 // O(1)
 bool probablyPrimeFermat(int n, int iter=5) {
-    if (n < 4)
-        return n == 2 || n == 3;
-
+    if (n < 4) return n == 2 || n == 3;
     for (int i = 0; i < iter; i++) {
         int a = 2 + rand() % (n - 3);
-        if (binpower(a, n - 1, n) != 1)
-            return false;
+        if (binpower(a, n - 1, n) != 1) return false;
     }
     return true;
 }
