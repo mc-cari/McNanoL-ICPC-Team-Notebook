@@ -16,18 +16,14 @@ ll eval(ll l, ll r){
 			vals.push((s[i] - '0') % k);
 			while(i < r && isdigit(s[i+1])){
 				i++;
-				vals.top() = (vals.top() * 10 + (s[i] - '0')) % k;
-		
-				
+				vals.top() = (vals.top() * 10 + (s[i] - '0')) % k;				
 			}
 		}
-		else if(s[i] == '(')
-		{
+		else if(s[i] == '('){
 			open++;
 			ops.push(s[i]);
 		}
-		else if(s[i] == ')')
-		{
+		else if(s[i] == ')'){
 			open--;
 			if(open < 0) return -1;
 			ll in = i-1;
@@ -38,7 +34,6 @@ ll eval(ll l, ll r){
 					vals.top() = (vals.top() + aux) % k;
 				}
 				else{
-					
 					vals.top() = (vals.top() * aux) % k;
 				}
 				ops.pop();
@@ -57,7 +52,6 @@ ll eval(ll l, ll r){
 		}
 	}
 	if(open != 0) return -1;
-
 	while(!ops.empty()){
 		ll aux = vals.top();
 		vals.pop();
@@ -69,19 +63,13 @@ ll eval(ll l, ll r){
 		}
 		ops.pop();
 	}
-	
 	return vals.top();
 }
 
 int main(){
-
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
+	ios_base::sync_with_stdio(0); cin.tie(0);
 	srand((unsigned int) time(0));
-
-
-	cin >> k >> n;
-	cin >> s;
+	cin >> k >> n >> s;
 
 	//cout << eval(0, n-1)<<"\n";
 	ll ans = 0;
@@ -91,11 +79,9 @@ int main(){
 				ans++;
 				//cout << i << " " << j <<" "<<eval(i,j)<< "\n";
 			}
-	
 		}
 	}
 	cout << ans << "\n";
-	
 	cerr << "\nTime elapsed: " << 1000 * clock() / CLOCKS_PER_SEC << "ms\n";
 	return 0;
 }
