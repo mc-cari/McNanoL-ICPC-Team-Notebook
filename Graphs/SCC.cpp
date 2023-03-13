@@ -10,7 +10,6 @@ void Kosaraju(int u, int pass, vl& S) { // pass = 1 (original), 2 (transpose)
       Kosaraju(it, pass, S);
   S.push_back(u);
 }
-
 // -----------------------------------------
 // implementation of Tarjan's SCC algorithm
 stack<int> St;
@@ -31,16 +30,12 @@ void tarjanSCC(int u) {
   if (dfs_low[u] == dfs_num[u]) {                                  
     while (1) {
       int v = St.top(); St.pop(); visited[v] = 0;
-
       if (u == v) break;
     }
     ++numSCC;  
   }
 }
-
-
 int main() {
-
     int n, m; cin >> n >> m;
     vector<vl> g(n);
     while(m--) {
@@ -54,10 +49,7 @@ int main() {
     for (int u = 0; u < n; ++u)
      if (dfs_num[u] == -1)
        tarjanSCC(u);
-
-
     //Kosaraju's SCC
-
     vl S;
     dfs_num.assign(n, -1);
     for (int u = 0; u < n; ++u)
@@ -70,6 +62,5 @@ int main() {
         if (dfs_num[S[i]] == -1)
             numSCC++, Kosaraju(S[i], 2, comp);             // on transposed graph
     }
-
     return 0;
 }
