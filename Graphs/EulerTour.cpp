@@ -9,8 +9,7 @@ void dfs(ll in, ll p)
     num++;
     L[in] = num;
     d.push_back(c[in]);
-    for(auto it : g[in])
-    {
+    for(auto it : g[in]){
         if(p != it)
             dfs(it, in);
     } 
