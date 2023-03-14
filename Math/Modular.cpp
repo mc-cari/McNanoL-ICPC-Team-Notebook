@@ -65,7 +65,7 @@ pll CRT(vector<pll> &v)
 {
     int N = v.size(); pll ans = v[0];
     rep(i, N) if (i) ans = CRT(ans, v[i]);
-   
+}
 
 
 // DISCRETE LOGARITHM
