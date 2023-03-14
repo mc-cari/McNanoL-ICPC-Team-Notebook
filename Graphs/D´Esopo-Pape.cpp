@@ -1,31 +1,26 @@
 #include "../Header.cpp"
 
-int main()
-{
-	ll v,x,y,e;
-	pll h;
-  	vector<ll>b;
-	cin >> v >> e;
-	vector<vp > g(v, vp (0));
-	vl peso(v, INF);
+int main(){
+    ll v,x,y,e;
+    pll h;
+    vector<ll>b;
+    cin >> v >> e;
+    vector<vp > g(v, vp (0));
+    vl peso(v, INF);
 
     int w;
-	for(ll i = 0; i < e; i++)
-	{
-		cin >> x >> y >> w;
-		
-		g[x-1].push_back({w, y-1});
-		g[y-1].push_back({w, x-1});
-	}
-	ll s, t;
-
+    for(ll i = 0; i < e; i++){
+        cin >> x >> y >> w;
+        g[x-1].push_back({w, y-1})    ;
+        g[y-1].push_back({w, x-1});
+    }
+    ll s, t;
     vl d(v, INF);
     d[s] = 0;
     vl m(v, 2);
     deque<ll> q;
     q.push_back(s);
     p.assign(v, -1);
-
     while (!q.empty()) {
         int u = q.front();
         q.pop_front();
@@ -44,6 +39,5 @@ int main()
             }
         }
     }
-
-	return 0;
+    return 0;
 }
