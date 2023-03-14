@@ -7,13 +7,13 @@ int DP(int i, int c){
     if(i==-1){
         return 0;
     }
-    if(c==0)return 0;
-        if(M[i][c] != -1) return M[i][c];
-        M[i][c] = DP(i-1, c);
-        if(W[i] <= c){
-            M[i][c] = max(M[i][c], DP(i-1, c - W[i]) + V[i]);
-	}
-        return M[i][c];
+    if(c==0) return 0;
+    if(M[i][c] != -1) return M[i][c];
+    M[i][c] = DP(i-1, c);
+    if(W[i] <= c){
+        M[i][c] = max(M[i][c], DP(i-1, c - W[i]) + V[i]);
+    }
+    return M[i][c];
 }
 
 // Variation
@@ -33,8 +33,7 @@ int knapSack(int W, int wt[], int val[], int n){
                  if(K[i-1][w][0]>val[i-1] + K[i-1][w-wt[i-1]][0]){
                      K[i][w][1]=K[i-1][w][1];
                      K[i][w][2]=K[i-1][w][2];
-                 }
-                 else{
+                 }else{
                     K[i][w][1]=K[i-1][w-wt[i-1]][1]+wt[i-1];
                     K[i][w][2]=K[i-1][w-wt[i-1]][2]+1;
                  }
