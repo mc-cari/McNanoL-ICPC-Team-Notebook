@@ -1,7 +1,6 @@
 #include "../Header.cpp"
 
 // Works with 3-pairing or more (Perfect MCBM)
-
 vl match, vis;                                   // global variables
 vector<vl> g;
 
@@ -16,20 +15,14 @@ int Aug(int L) {
   return 0;                                      // no matching
 }
 
-
-
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-
+    ios::sync_with_stdio(false); cin.tie(0); cout.tie(0);
     ll V, Vleft;
     // VLeft and VRight can have common vertices names
     // match[R] -> L
     match.assign(V, -1);
     ll MCBM = 0;
-    for(int L = 0; L < Vleft; L++)
-    {
+    for(int L = 0; L < Vleft; L++){
         vis.assign(Vleft, 0);
         MCBM += Aug(L);
     }
