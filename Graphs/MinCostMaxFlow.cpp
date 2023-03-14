@@ -1,14 +1,11 @@
 #include "../Header.cpp"
 
-struct Edge
-{
+struct Edge{
     int from, to, capacity, cost;
 };
- 
 vector<vector<int>> adj, cost, capacity;
- 
 const int INF = 1e9;
- 
+
 void shortest_paths(int n, int v0, vector<int>& d, vector<int>& p) {
     d.assign(n, INF);
     d[v0] = 0;
@@ -16,7 +13,6 @@ void shortest_paths(int n, int v0, vector<int>& d, vector<int>& p) {
     queue<int> q;
     q.push(v0);
     p.assign(n, -1);
- 
     while (!q.empty()) {
         int u = q.front();
         q.pop();
@@ -46,15 +42,12 @@ int min_cost_flow(int N, vector<Edge> edges, int K, int s, int t) {
         cost[e.to][e.from] = -e.cost;
         capacity[e.from][e.to] = e.capacity;
     }
- 
     int flow = 0;
     int cost = 0;
     vector<int> d, p;
     while (flow < K) {
         shortest_paths(N, s, d, p);
-        if (d[t] == INF)
-            break;
- 
+        if (d[t] == INF) break;
         // find max flow on that path
         int f = K - flow;
         int cur = t;
@@ -62,7 +55,6 @@ int min_cost_flow(int N, vector<Edge> edges, int K, int s, int t) {
             f = min(f, capacity[p[cur]][cur]);
             cur = p[cur];
         }
- 
         // apply flow
         flow += f;
         cost += f * d[t];
@@ -73,11 +65,8 @@ int min_cost_flow(int N, vector<Edge> edges, int K, int s, int t) {
             cur = p[cur];
         }
     }
- 
-    if (flow < K)
-        return -1;
-    else
-        return cost;
+    if (flow < K) return -1;
+    else return cost;
 }
  
 int sup[55], inf[55];
@@ -105,18 +94,13 @@ int main(){
     }
     vector<Edge>ee;
     Edge E;
- 
- 
-    for(int i = 0; i < n; i++)
-    {
+    for(int i = 0; i < n; i++){
         E.from = 0;
         E.to = i + 2;
         E.capacity = 1;
         E.cost = 0;
         ee.push_back(E);
-        for(int j = inf[i]; j <= sup[i]; j++)
-        {
-            
+        for(int j = inf[i]; j <= sup[i]; j++){
             E.from = i + 2;
             E.to = j + n + 1;
             E.capacity = 1;
@@ -125,10 +109,8 @@ int main(){
         }
     }
     ll id = n + 2 + n;
-    for(int i = n + 2; i <= n + 2 + n - 1; i++)
-    {
-        for(int j = 0; j < n; j++)
-        {
+    for(int i = n + 2; i <= n + 2 + n - 1; i++){
+        for(int j = 0; j < n; j++){
             E.from = i;
             E.to = id;
             E.capacity = 1;
@@ -144,7 +126,5 @@ int main(){
     }
     ans = min_cost_flow(2 * n + n*n + 10, ee, n, 0, 1);
     cout << ans << "\n";
- 
-    
     cerr << "\nTime elapsed: " << 1000 * clock() / CLOCKS_PER_SEC << "ms\n";
 }
