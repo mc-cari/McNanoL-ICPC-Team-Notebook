@@ -6,9 +6,8 @@ int main()
     string line, token;
     getline(cin, line);
     stringstream ss(line);
-    while(ss >> token)
-    {
+    while(ss >> token){
         cout << token << "\n";
     }
-	return 0;
+    return 0;
 }
