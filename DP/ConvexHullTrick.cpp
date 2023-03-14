@@ -3,7 +3,6 @@
 struct Line {
     ll m, c, id;
     ll calc(ll x) {
-	
         return m * x + c;
     }
 };
