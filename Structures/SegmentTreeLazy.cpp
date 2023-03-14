@@ -4,7 +4,7 @@ struct SegmentTree
 {
 	vector<ll> ST, Lazy;
 	int N; ll Nul = 0;
-	SegmentTree(vector<ll> &A)	{
+	SegmentTree(vector<ll> &A){
 		N = A.size();
 		ST.resize(4*N+5,0);
 		Lazy.resize(4*N+5,Nul);
