@@ -4,8 +4,7 @@
 vl L, R, d, c;
 ll num = -1;
 vector<vl>g;
-void dfs(ll in, ll p)
-{
+void dfs(ll in, ll p){
     num++;
     L[in] = num;
     d.push_back(c[in]);
