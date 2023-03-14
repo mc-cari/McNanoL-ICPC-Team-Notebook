@@ -28,9 +28,7 @@ int kmp(string& s, string& t) {
         if (s[i] == t[j]) {
             if (++i == n) { // we matched the whole pattern
                 i = lps[n-1]; // shift the pattern so that the longest proper prefix/suffix pair is aligned
-
-				matches++;
-								
+		matches++;						
             }
         }
     }
