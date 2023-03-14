@@ -1,338 +1,107 @@
-#include "../Header.cpp"
+#include "../Template.cpp"
 
-struct Node
-{
-	
-	ll mn, mn2, cmn, mx, mx2, cmx;
-  ll Amx, Bmx, Amn, Bmn;
-	ll sum;
-	Node()
-	{
-			mn = mn2 = LLONG_MAX;
-      mx = mx2 = LLONG_MIN;
-			sum = cmn = cmx = 0;
-      Bmx = LLONG_MIN;
-      Bmn = LLONG_MAX;
-      Amx = Amn = 0;
-	}
-	Node merge(Node r)
-	{
-		Node p;
-		p.sum = sum + r.sum;
-		if(r.mn < mn)
-		{
-			p.mn2 = min(mn, r.mn2);
-			p.mn = r.mn;
-			p.cmn = r.cmn;
-		}
-		else if(r.mn == mn)
-		{
-			p.cmn = cmn + r.cmn;
-			p.mn = mn;
-			p.mn2 = min(p.mn2, r.mn2);
-		}
-		else if(mn < r.mn)
-		{
-			p.mn2 = min(mn2, r.mn);
-			p.mn = mn;
-			p.cmn = cmn; 
-		}
-
-    if(r.mx > mx)
-    {
-      p.mx2 = max(mx, r.mx2);
-      p.mx = r.mx;
-      p.cmx = r.cmx;
+struct Node{
+    ll s, mx1, mx2, mxc, mn1, mn2, mnc, lz = 0;
+    Node() : s(0), mx1(LLONG_MIN), mx2(LLONG_MIN), mxc(0), mn1(LLONG_MAX), mn2(LLONG_MAX), mnc(0) {}
+    Node(ll x) : s(x), mx1(x), mx2(LLONG_MIN), mxc(1), mn1(x), mn2(LLONG_MAX), mnc(1) {}
+    Node(const Node &a, const Node &b){
+        // add
+        s = a.s + b.s;
+        // min
+        if (a.mx1 > b.mx1) mx1 = a.mx1, mxc = a.mxc, mx2 = max(b.mx1, a.mx2);
+        if (a.mx1 < b.mx1) mx1 = b.mx1, mxc = b.mxc, mx2 = max(a.mx1, b.mx2);
+        if (a.mx1 == b.mx1) mx1 = a.mx1, mxc = a.mxc + b.mxc, mx2 = max(a.mx2, b.mx2);
+        // max
+        if (a.mn1 < b.mn1) mn1 = a.mn1, mnc = a.mnc, mn2 = min(b.mn1, a.mn2);
+        if (a.mn1 > b.mn1) mn1 = b.mn1, mnc = b.mnc, mn2 = min(a.mn1, b.mn2);
+        if (a.mn1 == b.mn1) mn1 = a.mn1, mnc = a.mnc + b.mnc, mn2 = min(a.mn2, b.mn2);
     }
-    else if(r.mx == mx)
-    {
-      p.cmx = cmx + r.cmx;
-      p.mx = mx;
-      p.mx2 = max(p.mx2, r.mx2);
-    }
-    else if(mx > r.mx)
-    {
-      p.mx2 = max(mx2, r.mx);
-      p.mx = mx;
-      p.cmx = cmx; 
-    }
-
-    
-		return p;
-	}
-	void upd(ll v)
-	{
-		cmn = cmx = 1;
-		mn = mx = v;
-		sum = v;
-	}
 };
 
+// 0 - indexed / inclusive - inclusive
+template <class node>
+struct STB{
+    vector<node> st; int n;
 
-struct SegmentTree
-{
-	vector<Node> ST;
-	ll N;
-	vl Lazy, Lazymx, Lazymn, LazySet;
-	SegmentTree(vl &A)
-	{
-		N = A.size();
-		ST.assign(4*N, Node());
-		Lazy.resize(4*N+5, 0);
-		Lazymx.resize(4*N+5, LLONG_MIN);
-    Lazymn.resize(4*N+5, LLONG_MAX);
-		LazySet.resize(4*N+5, LLONG_MIN);
-		bd(1,0,N-1,A);
-	}
-	void bd(ll n, ll l, ll r, vl &A)
-	{
-		if(l == r)
-		{
-			ST[n].upd(A[l]);
-			//cout << "n " << n << " " << ST[n].mn << " " << ST[n].mn2 << " " << ST[n].sum << " " << ST[n].cmn << "\n";
-			return;
-		}
-		
-		bd(2*n,l,(l+r)/2,A);
-		bd(2*n+1,(l+r)/2+1,r,A);
-
-		ST[n] = ST[2*n].merge(ST[2*n+1]);
-
-		//cout << "n " << l << " "<<r << " " << ST[n].mn << " " << ST[n].mn2 << " " << ST[n].sum << " " << ST[n].cmn << "\n";
-	}
-	void up(ll n, ll l, ll r)
-	{
-			//set
-			if(LazySet[n] != LLONG_MIN)
-			{
-				ST[n].mn = LazySet[n];
-				ST[n].mn2 = LLONG_MAX;
-				ST[n].sum = (r-l+1)*LazySet[n];
-				ST[n].cmn = r-l+1;
-        ST[n].mx2 = LLONG_MIN;
-        ST[n].mx = LazySet[n];
-        ST[n].cmx = r-l+1;
-
-				//cout << "nlazy " << l << "--" << r << " " << ST[n].mn << " " << ST[n].mn2 << " " << ST[n].sum << " " << ST[n].cmn << "\n";
-			}
-		 	else{
-				ST[n].sum += (r-l+1)*Lazy[n];
-				ST[n].mn += Lazy[n];
-        ST[n].mx += Lazy[n];
-
-        //historical maximum/minimum
-        ST[n].Bmx += Lazy[n];
-        ST[n].Bmn += Lazy[n];
-				if(ST[n].mn2 != LLONG_MAX)ST[n].mn2 += Lazy[n];
-        if(ST[n].mx2 != LLONG_MIN)ST[n].mx2 += Lazy[n];
-			}
-			
-			// mx op
-      ST[n].Amx = max(ST[n].Amx, Lazymx[n]);
-			push_min(n, Lazymx[n]);
-      // mn op
-      ST[n].Amn = min(ST[n].Amn, Lazymn[n]);
-      push_max(n, Lazymn[n]);
-
-			//cout << l << "--" << r << " " << Lazy[n] << " " << Lazymx[n] << " " << ST[n].sum << endl;
-
-			if(l != r)
-			{
-					Lazy[n*2] += Lazy[n];
-					Lazy[n*2+1] += Lazy[n];
-
-					Lazymx[n*2] = ST[n].mn;
-					Lazymx[n*2+1] = ST[n].mn;
-            
-          Lazymn[n*2] = ST[n].mx;
-          Lazymn[n*2+1] = ST[n].mx;
-					if(LazySet[n] != LLONG_MIN)
-					{
-						LazySet[n*2] = LazySet[n];
-						LazySet[n*2+1] = LazySet[n];
-					}
-
-          // historical maximum
-          // max(Amx + x, Bmx)
-          ST[n*2].Amx = ST[n].Amx + ST[n*2].Amx;
-          ST[n*2].Bmx = max(ST[n*2].Bmx, ST[n].Bmx + ST[n*2].Amx);
-          ST[n*2+1].Amx = ST[n].Amx + ST[n*2+1].Amx;
-          ST[n*2+1].Bmx = max(ST[n*2+1].Bmx, ST[n].Bmx + ST[n*2+1].Amx);
-
-          // historical minimum
-          // min(Amn + x, Bmn)
-          ST[n*2].Amn = ST[n].Amn + ST[n*2].Amn;
-          ST[n*2].Bmn = min(ST[n*2].Bmn, ST[n].Bmn + ST[n*2].Amn);
-          ST[n*2+1].Amn = ST[n].Amn + ST[n*2+1].Amn;
-          ST[n*2+1].Bmn = min(ST[n*2+1].Bmn, ST[n].Bmn + ST[n*2+1].Amn);
-
-			}
-			Lazy[n] = 0;
-			Lazymx[n] = LLONG_MIN;
-      Lazymn[n] = LLONG_MAX;
-			LazySet[n] = LLONG_MIN;
-	}
-  // op max
-	void push_min(ll n, ll v){
-		if(v <= ST[n].mn) return;
-		ST[n].sum += (v-ST[n].mn)*ST[n].cmn;
-		ST[n].mn = v;
-	}
-  // op min
-  void push_max(ll n, ll v){
-    if(v >= ST[n].mx) return;
-    ST[n].sum += (v-ST[n].mx)*ST[n].cmx;
-    ST[n].mx = v;
-  }
-  // max(a[i], v)
-	void updmx(ll n, ll l, ll r, ll i, ll j, ll v)
-	{
-		up(n,l,r);
-		if(l > j || r < i || v <= ST[n].mn) return;
-		if(i <= l && r <= j && v < ST[n].mn2)
-		{
-			push_min(n,v);
-			up(n,l,r);
-			return;
-		}
-		updmx(2*n,l,(l+r)/2,i,j,v);
-		updmx(2*n+1,(l+r)/2+1,r,i,j,v);
-
-		ST[n] = ST[2*n].merge(ST[2*n+1]);
-	}
-  // min(a[i], v)
-  void updmn(ll n, ll l, ll r, ll i, ll j, ll v)
-  {
-    up(n,l,r);
-    if(l > j || r < i || v >= ST[n].mx) return;
-    if(i <= l && r <= j && v > ST[n].mx2)
-    {
-      push_max(n,v);
-      up(n,l,r);
-      return;
+    void build(int u, int i, int j, vector<node> &arr){
+        if (i == j) { st[u] = arr[i]; return; }
+        int m = (i + j) / 2, l = u * 2 + 1, r = u * 2 + 2;
+        build(l, i, m, arr), build(r, m + 1, j, arr);
+        st[u] = node(st[l], st[r]);
     }
-    updmn(2*n,l,(l+r)/2,i,j,v);
-    updmn(2*n+1,(l+r)/2+1,r,i,j,v);
+    void push_add(int u, int i, int j, ll v){
+        st[u].s += (j - i + 1) * v;
+        st[u].mx1 += v, st[u].mn1 += v, st[u].lz += v;
+        if (st[u].mx2 != LLONG_MIN) st[u].mx2 += v;
+        if (st[u].mn2 != LLONG_MAX) st[u].mn2 += v;
+    }
+    void push_max(int u, ll v, bool l){ // for min op
+        if (v >= st[u].mx1) return;
+        st[u].s -= st[u].mx1 * st[u].mxc;
+        st[u].mx1 = v;
+        st[u].s += st[u].mx1 * st[u].mxc;
+        if (l) st[u].mn1 = st[u].mx1;
+        else if (v <= st[u].mn1) st[u].mn1 = v;
+        else if (v < st[u].mn2) st[u].mn2 = v;
+    }
+    void push_min(int u, ll v, bool l){ // for max op
+        if (v <= st[u].mn1) return;
+        st[u].s -= st[u].mn1 * st[u].mnc;
+        st[u].mn1 = v;
+        st[u].s += st[u].mn1 * st[u].mnc;
+        if (l) st[u].mx1 = st[u].mn1;
+        else if (v >= st[u].mx1) st[u].mx1 = v;
+        else if (v > st[u].mx2) st[u].mx2 = v;
+    }
+    void push(int u, int i, int j){
+        if (i == j) return;
+        // add
+        int m = (i + j) / 2, l = u * 2 + 1, r = u * 2 + 2;
+        push_add(l, i, m, st[u].lz);
+        push_add(r, m + 1, j, st[u].lz);
+        st[u].lz = 0;
+        // min
+        push_max(l, st[u].mx1, i == m);
+        push_max(r, st[u].mx1, m + 1 == j);
+        // max
+        push_min(l, st[u].mn1, i == m);
+        push_min(r, st[u].mn1, m + 1 == r);
+    }
+    node query(int a, int b, int u, int i, int j){
+        if (b < i || j < a) return node();
+        if (a <= i && j <= b) return st[u];
+        push(u, i, j);
+        int m = (i + j) / 2, l = u * 2 + 1, r = u * 2 + 2;
+        return node(query(a, b, l, i, m), query(a, b, r, m + 1, j));
+    }
+    void update_add(int a, int b, ll v, int u, int i, int j){
+        if (b < i || j < a) return;
+        if (a <= i && j <= b) { push_add(u, i, j, v); return; }
+        push(u, i, j);
+        int m = (i + j) / 2, l = u * 2 + 1, r = u * 2 + 2;
+        update_add(a, b, v, l, i, m); update_add(a, b, v, r, m + 1, j);
+        st[u] = node(st[l], st[r]);
+    }
+    void update_min(int a, int b, ll v, int u, int i, int j){
+        if (b < i || j < a || v >= st[u].mx1) return;
+        if (a <= i && j <= b && v > st[u].mx2) { push_max(u, v, i == j); return; }
+        push(u, i, j);
+        int m = (i + j) / 2, l = u * 2 + 1, r = u * 2 + 2;
+        update_min(a, b, v, l, i, m); update_min(a, b, v, r, m + 1, j);
+        st[u] = node(st[l], st[r]);
+    }
+    void update_max(int a, int b, ll v, int u, int i, int j){
+        if (b < i || j < a || v <= st[u].mn1) return;
+        if (a <= i && j <= b && v < st[u].mn2) { push_min(u, v, i == j); return; }
+        push(u, i, j);
+        int m = (i + j) / 2, l = u * 2 + 1, r = u * 2 + 2;
+        update_max(a, b, v, l, i, m); update_max(a, b, v, r, m + 1, j);
+        st[u] = node(st[l], st[r]);
+    }
 
-    ST[n] = ST[2*n].merge(ST[2*n+1]);
-  }
-	Node qry(ll n, ll l, ll r, ll i, ll j)
-	{
-		
-		if(r < i || j < l)
-		{
-			Node p;
-			return p;
-		}
-		up(n,l,r);
-
-		if(i <= l && r <= j) {
-			//cout <<l <<" "<<r<< "* " << ST[n].sum<<"\n";
-			return ST[n];
-		}
-		return qry(2*n,l,(l+r)/2,i,j).merge(qry(2*n+1,(l+r)/2+1,r,i,j));
-	} 
-	void upd_add(ll n, ll l, ll r, ll i, ll j, ll v)
-	{
-		up(n,l,r);
-		if(l > j || r < i) return;
-
-		if(i <= l && r <= j)
-		{
-			//cout << l << " " << r << " "<<ST[n].sum << "\n";
-			Lazy[n] += v;
-			up(n, l, r);
-			return;
-		}
-		upd_add(2*n,l,(l+r)/2,i,j,v);
-		upd_add(2*n+1,(l+r)/2+1,r,i,j,v);
-
-		ST[n] = ST[2*n].merge(ST[2*n+1]);
-	}
-	void upd_set(ll n, ll l, ll r, ll i, ll j, ll v)
-	{
-		up(n,l,r);
-		if(l > j || r < i) return;
-
-		if(i <= l && r <= j)
-		{
-			//cout << l << " " << r << " "<<ST[n].sum << "\n";
-			LazySet[n] = v;
-			up(n, l, r);
-			return;
-		}
-		upd_set(2*n,l,(l+r)/2,i,j,v);
-		upd_set(2*n+1,(l+r)/2+1,r,i,j,v);
-
-		ST[n] = ST[2*n].merge(ST[2*n+1]);
-	}
-  Node qry(ll i, ll j){return qry(1,0,N-1,i,j);}
-  void updmx(ll i, ll j, ll v){return updmx(1,0,N-1,i,j,v);}
-  void updmn(ll i, ll j, ll v){return updmn(1,0,N-1,i,j,v);}
-  void upd_add(ll i, ll j, ll v){return upd_add(1,0,N-1,i,j,v);}
-  void upd_set(ll i, ll j, ll v){return upd_set(1,0,N-1,i,j,v);}
+    STB(vector<node> &v, int N) : n(N), st(N * 4 + 5) { build(0, 0, n - 1, v); }
+    node query(int a, int b) { return query(a, b, 0, 0, n - 1); }
+    void update_add(int a, int b, ll v) { update_add(a, b, v, 0, 0, n - 1); }
+    void update_min(int a, int b, ll v) { update_min(a, b, v, 0, 0, n - 1); }
+    void update_max(int a, int b, ll v) { update_max(a, b, v, 0, 0, n - 1); }
 };
-
-int main(){
-
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
-	srand((unsigned int) time(0));
-
-
-	vl c = {0, 0, 0, 0, 0, 0};
-	SegmentTree ST(c);
-	rep(i, c.size()){
-		cout << ST.qry(i, i).sum << " ";
-	}
-	cout << endl;
-
-
-	ST.upd_add(2, 3, 2);
-	cout << ST.qry(2, 3).sum << endl;
-	rep(i, c.size()){
-		cout << ST.qry(i, i).sum << " ";
-	}
-	cout << endl;
-
-	ST.updmx(0, 3, 3);
-	cout << ST.qry(0, 3).sum << endl;
-	rep(i, c.size()){
-		cout << ST.qry(i, i).sum << " ";
-	}
-	cout << endl;
-
-	ST.updmx(3, 5, 1);
-	cout << ST.qry(3, 5).sum << endl;
-	rep(i, c.size()){
-		cout << ST.qry(i, i).sum << " ";
-	}
-	cout << endl;
-
-	ST.upd_add(0, 5, -3);
-	cout << ST.qry(0, 5).sum << endl;
-	rep(i, c.size()){
-		cout << ST.qry(i, i).sum << " ";
-	}
-	cout << endl;
-
-	ST.upd_set(0, 5, -2);
-	cout << ST.qry(0, 5).sum << endl;
-	rep(i, c.size()){
-		cout << ST.qry(i, i).sum << " ";
-	}cout << endl;
-
-	ST.upd_set(3, 3, 33);
-	cout << ST.qry(0, 5).sum << endl;
-	rep(i, c.size()){
-		cout << ST.qry(i, i).sum << " ";
-	}cout << endl;
-
-
-	
-
-
-
-	cerr << "\nTime elapsed: " << 1000 * clock() / CLOCKS_PER_SEC << "ms\n";
-	return 0;
-}
