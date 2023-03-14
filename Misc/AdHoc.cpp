@@ -1,38 +1,29 @@
 #include "../Header.cpp"
 
-int joseph(int n,int m)
-{
+int joseph(int n,int m){
     int Result=0;
-    for(int i=1;i<=n;i++)
-    {
+    for(int i=1;i<=n;i++){
         Result=(Result+m-1)%i+1;
     }
     return(Result);
 }
-int joseph(int n,int m)
-{
+int joseph(int n,int m){
     vl a(n+1, 0);
     //see eliminated
     bool o = 1;
-    for(int i = 0; i < n/2; i++)
-    {
-        
+    for(int i = 0; i < n/2; i++){
         a[i+1] = (a[i] + m-1)%(n-i);
-        if(a[i+1] < n/2 )
-        {
+        if(a[i+1] < n/2){
             o = 0;
             break;
         }
-        
     }
 }
 // if k = 2
 // move first significant bit to right
-int joseph(ll n)
-{
+int joseph(ll n){
     ll bit = 62;
-    while(!(n & (1 << bit)))
-    {
+    while(!(n & (1 << bit))){
         bit--;
     }
     n &= ~(1 << bit);
