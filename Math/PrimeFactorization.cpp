@@ -114,6 +114,9 @@ ll pollards_p_minus_1(ll n) {
     }
     return 1;
 }
+// PRIMALITY DETERMINISTIC UNTIL 10^18 
+// 2, 3, 5, 13, 19, 73, 193, 407521, 299210837 
+
 
 // POLLARD RHO
 // Pollard Rho
