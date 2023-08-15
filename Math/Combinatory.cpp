@@ -3,6 +3,7 @@
 const int M = 1e9+7;
 
 // binary exponent 
+// Note that a^(b^c) % p = a^(b^c % p - 1) % p for little fermat therorem
 ll expmod(ll b, ll e){
     ll ans = 1;
     while(e){
