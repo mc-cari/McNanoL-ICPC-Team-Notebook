@@ -3,7 +3,7 @@
 const int M = 1e9+7;
 
 // binary exponent 
-// Note that a^(b^c) % p = a^(b^c % p - 1) % p for little fermat therorem
+// Note that a^(b^c) % p = a^(b^c % (p - 1)) % p for little fermat therorem
 ll expmod(ll b, ll e){
     ll ans = 1;
     while(e){
@@ -95,10 +95,23 @@ ll lucas(ll n, ll k, int p){
     return ans;
 }
 
-
 // Multinomial Coefficient
 ll multinomial(vector<int> K) {
     ll n = 0, ans = 1;
     for (int k : K) n += k, ans = mul(ans, choose(n, k));
     return ans;
 }
+
+// Catalan numbers
+// Counting problem where the solution is expressed by combining two 
+// identical subproblems with total size = n−1 then involves Catalan
+ll Catalan(ll n) {
+    return choose(2 * n, n) * invmod(n + 1) % mod;
+} 
+// C_n = (4n - 2) / (n + 1) * C_{n-1}, C_0 = 1
+// Catalan convolution
+// C_n^i = sum_{i1, i2, ..., ik, sum(i_j) = n} C_i1 * C_i2 * ... * C_ik
+ll CatalanConv(ll n, ll k) {
+    return (k + 1) * inv(n + k + 1) % mod * choose(2 * n + k, n) % mod;
+}
+
