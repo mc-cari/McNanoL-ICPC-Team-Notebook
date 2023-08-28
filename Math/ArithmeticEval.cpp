@@ -82,6 +82,4 @@ int main(){
 		}
 	}
 	cout << ans << "\n";
-	cerr << "\nTime elapsed: " << 1000 * clock() / CLOCKS_PER_SEC << "ms\n";
-	return 0;
 }

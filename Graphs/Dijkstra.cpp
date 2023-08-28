@@ -12,10 +12,10 @@ int main(){
         q.pop();
         if(w > d[u]) continue;
         for(auto it : g[u]){
-	    if(d[it.second] > w + it.first){
-	        d[it.second] = w + it.first;
-	        q.push({d[it.second], it.second});
-	    }
+            if(d[it.second] > w + it.first){
+                d[it.second] = w + it.first;
+                q.push({d[it.second], it.second});
+            }
         }
     }
 }

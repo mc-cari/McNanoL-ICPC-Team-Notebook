@@ -30,6 +30,10 @@ int joseph(ll n){
     return 1 + (n << 1);
 }
 
+// matching in DAG gives min number of paths to cover all nodes
+// Dilword
+// matching in transitive DAG gives max independent set
+
 // primes in a n size range n / log(n)
 
 // nim game

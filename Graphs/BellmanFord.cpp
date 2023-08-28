@@ -7,9 +7,9 @@ int main(){
     cin >> v >> e >> r;
     pll h;
     vl d(v, INF);
-    d[r] = 0;//nodo de inicio
+    d[r] = 0;
     vector<vector<pll> > g(v, vector<pll> (0));
-    for(int i = 0 ;i < e; i++){
+    for(int i = 0 ; i < e; i++){
         cin >> x >> y >> w;
         h.first = y;
         h.second = w;
@@ -41,7 +41,6 @@ int main(){
         for(auto it : g[j])
             if(d[j] < INF && d[it.first] > d[j] + it.second)
                 cyc = 1;
-    // From :https://github.com/stevenhalim/cpbook-code/blob/master/ch4/sssp/bellman_ford_moore.cpp
     // Faster but doesnt support negative cycles
     // SPFA from source S
     vl dist(v, INF); dist[s] = 0;                  // INF = 1e9 here

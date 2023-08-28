@@ -21,8 +21,6 @@ void cdfs(int x=0, int f=-1, int sz=-1){ // O(nlogn)
 }
 void centroid(){memset(tk,false,sizeof(tk));cdfs();}
 int main(){
-  ios_base::sync_with_stdio(0); cin.tie(0);
-
   ll t; cin >> t;
   for(int T = 1; T <= t; T++) {
     memset(memo, -1, sizeof(memo));
