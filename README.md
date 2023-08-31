@@ -1,6 +1,6 @@
 # McNanoL-ICPC-Team-Notebook
 
-## Build PDF
+## Build Notebook PDF
 
 Install [notebook-generator](https://github.com/pin3da/notebook-generator).
 
