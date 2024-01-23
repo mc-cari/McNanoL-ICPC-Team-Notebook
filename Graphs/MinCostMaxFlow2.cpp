@@ -12,17 +12,36 @@ class MCMF{
     vector<Edge> L; vi F; vector<T> D, P; vector<bool> V;
     bool dij(int s, int t){
         D.assign(n, INF); F.assign(n, -1); V.assign(n, false);
+        // D[s] = 0;
+        // rep(_, n){
+        //     int best = -1;
+        //     rep(i, n) if (!V[i] && (best == -1 || D[best] > D[i])) best = i;
+        //     if (D[best] >= INF) break;
+        //     V[best] = true;
+        //     for (int e : E[best]){
+        //         Edge ed = L[e];
+        //         if (ed.c == 0) continue;
+        //         T toD = D[best] + ed.w + P[best] - P[ed.v];
+        //         if (toD < D[ed.v]) D[ed.v] = toD, F[ed.v] = e;
+        //     }
+        // }
+        priority_queue<pair<T, int>> q;
         D[s] = 0;
-        rep(_, n){
-            int best = -1;
-            rep(i, n) if (!V[i] && (best == -1 || D[best] > D[i])) best = i;
-            if (D[best] >= INF) break;
-            V[best] = true;
-            for (int e : E[best]){
+        q.push({D[s], s});
+        while(!q.empty()) {
+            int x = q.top().second;
+            ll d = -q.top().first;
+            q.pop();
+            if(D[x] != d) continue;
+            for(int e: E[x]) {
                 Edge ed = L[e];
-                if (ed.c == 0) continue;
-                T toD = D[best] + ed.w + P[best] - P[ed.v];
-                if (toD < D[ed.v]) D[ed.v] = toD, F[ed.v] = e;
+                if(ed.c == 0) continue;
+                T toD = D[x] + ed.w + P[x] - P[ed.v];
+                if(D[ed.v] > toD) {
+                    D[ed.v] = toD;
+                    q.push({-D[ed.v], ed.v});
+                    F[ed.v] = e;
+                }
             }
         }
         return D[t] < INF;
