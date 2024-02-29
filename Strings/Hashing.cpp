@@ -71,7 +71,7 @@ struct MultiHash {
     vector<Hash> MH = {
         Hash<200200, 1000000007, 123>, 
         Hash<200200, 1000000009, 1234>,
-        Hash <200200, 1000000021, 12345> C;
+        Hash <200200, 1000000021, 12345>
     };
     void init(const string &s) { rep(i, MH.size()) MH[i].init(s); }
 
