@@ -41,3 +41,43 @@ bool compare(int a, int b){
 //Suffix Array O(N log^2 N)
 rep(n) sa[i] = i;
 sort(ALL(sa), compare)
+
+template<const int LIM, const int MOD, const int BASE>
+struct Hash {
+    int binpow(int a, int b) {
+        int res = 1;
+        while(b) {
+            if(b & 1) res = (1LL * res * a) % MOD, a = (1LL * a * a) % MOD;
+            b >>= 1;
+        }
+        return res;
+    }
+
+    int H[LIM], P[LIM];
+    void init(const string& s) {
+        int n = s.size(), b = 1;
+        H[0] = 0;
+        rep(i, n) {
+            H[i + 1] = (H[i] + 1LL * b * (s[i] - 'a' + 1)) % MOD;
+            b = (1LL * b * BASE) % MOD;
+        }
+        P[n] = binpow(b, MOD - 2);
+        for(int i = n - 1; i >= 0; i--) P[i] = (1LL * P[i + 1] * BASE) % MOD; 
+    }
+    int query(int l, int r) { return (1LL * (H[r] - H[l] + MOD) * P[l]) % MOD; }
+};
+
+struct MultiHash {
+    vector<Hash> MH = {
+        Hash<200200, 1000000007, 123>, 
+        Hash<200200, 1000000009, 1234>,
+        Hash <200200, 1000000021, 12345> C;
+    };
+    void init(const string &s) { rep(i, MH.size()) MH[i].init(s); }
+
+    vector<int> query(int l, int r) {
+        vector<int> q;
+        rep(i, MH.size()) q.pb(MH.query(l, r));
+        return q; 
+    }    
+};
