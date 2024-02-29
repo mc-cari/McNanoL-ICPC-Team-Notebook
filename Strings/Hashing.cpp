@@ -67,17 +67,18 @@ struct Hash {
     int query(int l, int r) { return (1LL * (H[r] - H[l] + MOD) * P[l]) % MOD; }
 };
 
-struct MultiHash {
-    vector<Hash> MH = {
-        Hash<200200, 1000000007, 123>, 
-        Hash<200200, 1000000009, 1234>,
-        Hash <200200, 1000000021, 12345>
-    };
-    void init(const string &s) { rep(i, MH.size()) MH[i].init(s); }
+struct MultiHash {    
+    Hash<200200, 1000000007, 123> A; 
+    Hash<200200, 1000000009, 1234> B;
+    Hash<200200, 1000000021, 12345> C;
+
+    void init(const string &s) {
+        A.init(s); B.init(s); C.init(s);
+    }
 
     vector<int> query(int l, int r) {
         vector<int> q;
-        rep(i, MH.size()) q.pb(MH.query(l, r));
+        q.pb(A.query(l, r)); q.pb(B.query(l, r)); q.pb(C.query(l, r));
         return q; 
     }    
 };
