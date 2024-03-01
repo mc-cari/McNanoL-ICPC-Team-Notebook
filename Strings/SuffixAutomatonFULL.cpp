@@ -5,82 +5,71 @@ const int N = 3e5 + 9;
 // firstpos -> 1 indexed end position of the first occurrence of the largest string of that node
 // minlen(v) -> smallest string of node v = len(link(v)) + 1
 // terminal nodes -> store the suffixes
-struct SuffixAutomaton {
-    struct node {
-        int len, link, firstpos;
-        map<char, int> nxt;
-    };
-    int sz, last;
-    vector<node> t;
-    vector<int> terminal;
-    vector<long long> dp;
-    vector<vector<int>> g;
-    SuffixAutomaton() {}
-    SuffixAutomaton(int n) {
-        t.resize(2 * n); terminal.resize(2 * n, 0);
-        dp.resize(2 * n, -1); sz = 1; last = 0;
-        g.resize(2 * n);
-        t[0].len = 0; t[0].link = -1; t[0].firstpos = 0;
+struct SA {
+    int sz, l; 
+    // C: indicador si es clone
+    // Lk: link
+    // Ilk: inverse links
+    // L: maxlen of state
+    // S: Size of state
+    // F: first ocurrence of the state
+    vl L, Lk, S, C, T, F;
+    vector<vl> N, Ilk;
+
+    SA(string s, int n) : L(2 * n), Lk(2 * n), C(2 * n), F(2 * n), N(2 * n, vl(26, -1)) {
+        l = L[0] = 0, Lk[0] = -1, sz = 1; 
+        int p;
+        for(char c : s) p = extend(c - 'a');
+        Ilk.resize(sz); S.assign(sz, -1);
+        rep(i, sz) if(i) Ilk[Lk[i]].pb(i);
+
+        T.assign(sz, 0); 
+        while(p != -1) T[p] = 1, p = Lk[p];
     }
-    void extend(char c) {
-        int p = last;
-        if (t[p].nxt.count(c)) {
-            int q = t[p].nxt[c];
-            if (t[q].len == t[p].len + 1) {
-                last = q;
-                return;
-            }
-            int clone = sz++;
-            t[clone] = t[q];
-            t[clone].len = t[p].len + 1;
-            t[q].link = clone;
-            last = clone;
-            while (p != -1 && t[p].nxt[c] == q) {
-                t[p].nxt[c] = clone;
-                p = t[p].link;
-            }
-            return;
+    int extend(int c) {
+        int cur = sz++, p = l; 
+        C[cur] = 0, L[cur] = L[l] + 1, F[cur] = L[cur] - 1;
+        while(p != -1 && N[p][c] == -1) N[p][c] = cur, p = Lk[p];
+        if(p == -1) { 
+            Lk[cur] = 0, l = cur;
+            return cur;
         }
-        int cur = sz++;
-        t[cur].len = t[last].len + 1;
-        t[cur].firstpos = t[cur].len;
-        p = last;
-        while (p != -1 && !t[p].nxt.count(c)) {
-            t[p].nxt[c] = cur;
-            p = t[p].link;
-        }
-        if (p == -1) t[cur].link = 0;
-        else {
-            int q = t[p].nxt[c];
-            if (t[p].len + 1 == t[q].len) t[cur].link = q;
-            else {
-                int clone = sz++;
-                t[clone] = t[q];
-                t[clone].len = t[p].len + 1;
-                while (p != -1 && t[p].nxt[c] == q) {
-                    t[p].nxt[c] = clone;
-                    p = t[p].link;
-                }
-                t[q].link = t[cur].link = clone;
-            }
-        }
-        last = cur;
+        int q = N[p][c];
+        if(L[p] + 1 == L[q]) { Lk[cur] = q, l = cur; return cur; }
+        int w = sz++; 
+        C[w] = 1, L[w] = L[p] + 1, Lk[w] = Lk[q], N[w] = N[q];
+        F[w] = F[q];
+        while (p != -1 && N[p][c] == q) N[p][c] = w, p = Lk[p];
+        Lk[q] = Lk[cur] = w, l = cur; return cur;
     }
-    void build_tree() {
-        for (int i = 1; i < sz; i++) g[t[i].link].push_back(i);
+    int size(int p) {
+        if(S[p] != -1) return S[p];
+        for(int i : Ilk[p]) S[p] += size(i);
+        return S[p] += (1 - C[p]) + 1;
     }
-    void build(string &s) {
-        for (auto x: s) {
-            extend(x);
-            terminal[last] = 1;
+
+    int find(string& s) {
+        int p = 0;
+        for(auto u: s) {
+            int x = u - 'a';
+            if(N[p][x] == -1) return -1;
+            p = N[p][x];
         }
-        build_tree();
+        return p;
     }
-    long long cnt(int i) { //number of times i-th node occurs in the string
-        if (dp[i] != -1) return dp[i];
-        long long ret = terminal[i];
-        for (auto &x: g[i]) ret += cnt(x);
-        return dp[i] = ret;
+
+    vl all_occur(string& s) {
+        vl aux;
+        int p = find(s);
+        if(p == -1) return aux;
+        vl Q = {p};
+        int large = s.size();
+        while(!Q.empty()) {
+            int u = Q.back(); Q.pop_back();
+            if(!C[u]) aux.pb(F[u] - large + 1);
+            for(int v: Ilk[u]) Q.pb(v);
+        }
+        return aux;
     }
 };
 
@@ -91,10 +80,9 @@ int32_t main() {
     while (t--) {
         string s; cin >> s;
         int n = s.size();
-        SuffixAutomaton sa(n);
-        sa.build(s);
+        SA sa(s, n);
         long long ans = 0; //number of unique substrings
-        for (int i = 1; i < sa.sz; i++) ans += sa.t[i].len - sa.t[sa.t[i].link].len;
+        for(int i = 1; i < sa.sz; i++) ans += sa.L[i] - sa.L[sa.Lk[i]];
         cout << ans << '\n';
     }
     return 0;
