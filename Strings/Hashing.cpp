@@ -44,18 +44,21 @@ sort(ALL(sa), compare)
 
 template<const int LIM, const int MOD, const int BASE>
 struct Hash {
+    vector<int> H, P;
+ 
     int binpow(int a, int b) {
         int res = 1;
         while(b) {
-            if(b & 1) res = (1LL * res * a) % MOD, a = (1LL * a * a) % MOD;
+            if(b & 1) res = (1LL * res * a) % MOD;
+            a = (1LL * a * a) % MOD;
             b >>= 1;
         }
         return res;
     }
-
-    int H[LIM], P[LIM];
+ 
     void init(const string& s) {
-        int n = s.size(), b = 1;
+        H.resize(LIM); P.resize(LIM);
+        int n = s.length(), b = 1;
         H[0] = 0;
         rep(i, n) {
             H[i + 1] = (H[i] + 1LL * b * (s[i] - 'a' + 1)) % MOD;
