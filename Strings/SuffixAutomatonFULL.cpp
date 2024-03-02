@@ -13,10 +13,12 @@ struct SA {
     // L: maxlen of state
     // S: Size of state
     // F: first ocurrence of the state
-    vl L, Lk, S, C, T, F;
+    // Count: DP for diff substrings from u
+    // Count2: DP for all substrings from u
+    vl L, Lk, S, C, T, F, Count, Count2, Occ;
     vector<vl> N, Ilk;
 
-    SA(string s, int n) : L(2 * n), Lk(2 * n), C(2 * n), F(2 * n), N(2 * n, vl(26, -1)) {
+    SA(string s, int n) : L(2 * n), Lk(2 * n), C(2 * n), F(2 * n), Count(2 * n, 0), Count2(2 * n, -1), S(2 * n, -1), N(2 * n, vl(26, -1)) {
         l = L[0] = 0, Lk[0] = -1, sz = 1; 
         int p;
         for(char c : s) p = extend(c - 'a');
@@ -42,11 +44,6 @@ struct SA {
         while (p != -1 && N[p][c] == q) N[p][c] = w, p = Lk[p];
         Lk[q] = Lk[cur] = w, l = cur; return cur;
     }
-    int size(int p) {
-        if(S[p] != -1) return S[p];
-        for(int i : Ilk[p]) S[p] += size(i);
-        return S[p] += (1 - C[p]) + 1;
-    }
 
     int find(string& s) {
         int p = 0;
@@ -58,18 +55,49 @@ struct SA {
         return p;
     }
 
-    vl all_occur(string& s) {
-        vl aux;
-        int p = find(s);
-        if(p == -1) return aux;
-        vl Q = {p};
-        int large = s.size();
-        while(!Q.empty()) {
-            int u = Q.back(); Q.pop_back();
-            if(!C[u]) aux.pb(F[u] - large + 1);
-            for(int v: Ilk[u]) Q.pb(v);
+    ll size(int u) {
+        if(u == -1) return 0;
+        if(S[u] != -1) return S[u];
+        // Occurrance at F[u] - large + 1 if it is not a clone
+        S[u] = !C[u]; 
+        for(int v: Ilk[u]) S[u] += size(v);
+        return S[u];
+    }
+
+    ll size(string& s) { return size(find(s)); }
+
+    ll count(int u) { // Number of diff substrings
+        if(Count[u] > 0) return Count[u];
+        Count[u] = 0;
+        rep(c, 26) if(N[u][c] != -1) {
+            Count[u] += count(N[u][c]);
         }
-        return aux;
+        return Count[u] += 1;
+    }
+
+    ll count2(int u) {
+        if(Count2[u] != -1) return Count2[u];
+        Count2[u] = size(u);
+        rep(c, 26) if(N[u][c] != -1) {
+            Count2[u] += count2(N[u][c]);
+        }
+        return Count2[u];
+    }
+    
+    void kthless(int u, ll &cont, string& ans) {
+        if(cont <= 0) return;
+        rep(c, 26) if(N[u][c] != -1) {
+            // change to count(N[u][c]) for diff substrs
+            if(cont > count2(N[u][c])) cont -= count2(N[u][c]); 
+            else {
+                // change to cont-- for diff substrs
+                cont -= size(N[u][c]); 
+                ans += char(c + 'a');
+                kthless(N[u][c], cont, ans); 
+                return;
+            }
+        }
+        return;
     }
 };
 
