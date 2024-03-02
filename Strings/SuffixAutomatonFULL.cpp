@@ -6,7 +6,7 @@ const int N = 3e5 + 9;
 // minlen(v) -> smallest string of node v = len(link(v)) + 1
 // terminal nodes -> store the suffixes
 struct SA {
-    int sz, l; 
+    int sz, l, n; 
     // C: indicador si es clone
     // Lk: link
     // Ilk: inverse links
@@ -15,10 +15,10 @@ struct SA {
     // F: first ocurrence of the state
     // Count: DP for diff substrings from u
     // Count2: DP for all substrings from u
-    vl L, Lk, S, C, T, F, Count, Count2, Occ;
+    vl L, Lk, S, C, T, F, Count, Count2;
     vector<vl> N, Ilk;
 
-    SA(string s, int n) : L(2 * n), Lk(2 * n), C(2 * n), F(2 * n), Count(2 * n, 0), Count2(2 * n, -1), S(2 * n, -1), N(2 * n, vl(26, -1)) {
+    SA(string s, int n) : n(n), L(2 * n), Lk(2 * n), C(2 * n), F(2 * n), Count(2 * n, 0), Count2(2 * n, -1), S(2 * n, -1), N(2 * n, vl(26, -1)) {
         l = L[0] = 0, Lk[0] = -1, sz = 1; 
         int p;
         for(char c : s) p = extend(c - 'a');
@@ -83,7 +83,7 @@ struct SA {
         }
         return Count2[u];
     }
-    
+
     void kthless(int u, ll &cont, string& ans) {
         if(cont <= 0) return;
         rep(c, 26) if(N[u][c] != -1) {
@@ -98,6 +98,23 @@ struct SA {
             }
         }
         return;
+    }
+    
+    void count_substrs() {
+        vector<ll> Open[n + 1];
+        vector<ll> Closed[n + 1];
+        repx(i, 1, sz) {
+            ll val = size(i);
+            // change 1 to val for not different substrs
+            Open[L[Lk[i]]].pb(1); 
+            Closed[L[i]].pb(1);
+        }
+        ll cont = 0;
+        rep(i, n + 1) {
+            if(i) cout<<cont<<' ';
+            for(auto x: Open[i]) cont += x;
+            for(auto x: Closed[i]) cont -= x; 
+        }
     }
 };
 
